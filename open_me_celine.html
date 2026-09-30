@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Happy Birthday</title>
+<link rel="icon" type="image/jpeg" href="image/1.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2a1233;--bg2:#4a1d4f;--paper:#fff4f0;--ink:#3a1a3f;--rose:#ff7a9c;--flame:#ffb84d}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:"DM Sans",system-ui,sans-serif;color:var(--paper);background:radial-gradient(120% 90% at 50% 100%,var(--bg2),var(--bg));overflow-x:hidden;min-height:100vh}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center}
+h1{font-family:Caveat,cursive;font-size:clamp(3rem,13vw,6rem);line-height:1;font-weight:700}
+.sub{margin-top:10px;opacity:.85;min-height:1.5em}
+.cake{margin:36px 0 12px;position:relative;width:260px}
+.candles{display:flex;justify-content:center;gap:26px;height:70px;align-items:flex-end}
+.candle{position:relative;width:14px;height:44px;background:repeating-linear-gradient(-45deg,var(--paper) 0 6px,var(--rose) 6px 12px);border-radius:3px;border:0;cursor:pointer;padding:0}
+.candle:focus-visible{outline:3px solid var(--flame);outline-offset:6px}
+.flame{position:absolute;left:50%;bottom:100%;width:14px;height:22px;margin-left:-7px;background:radial-gradient(circle at 50% 70%,#fff 0,var(--flame) 45%,#ff7a2e 100%);border-radius:50% 50% 50% 50%/65% 65% 35% 35%;transform-origin:50% 100%;animation:flick .5s ease-in-out infinite alternate;filter:drop-shadow(0 0 10px var(--flame));transition:opacity .25s,transform .25s}
+.candle.out .flame{opacity:0;transform:scale(.2);animation:none}
+@keyframes flick{to{transform:scale(1.08,.94) rotate(3deg)}}
+.tier1{height:46px;background:var(--rose);border-radius:10px 10px 0 0}
+.tier2{height:54px;background:var(--paper);border-radius:0 0 14px 14px;box-shadow:inset 0 14px 0 #ffd3dc}
+.hint{font-size:.95rem;opacity:.8;margin-top:8px}
+.msg{white-space:pre-wrap;overflow-wrap:anywhere}
+.letter{max-width:560px;width:100%;margin-top:28px;padding:26px 24px;background:var(--paper);color:var(--ink);border-radius:6px;text-align:left;line-height:1.65;display:none;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.letter.show{display:block;animation:rise .8s ease both}
+.letter h2{font-family:Caveat,cursive;font-size:2rem;margin-bottom:8px}
+.letter ul{margin:14px 0 14px 1.1em}
+.letter li{margin:6px 0}
+.sign{font-family:Caveat,cursive;font-size:1.8rem;margin-top:10px;text-align:right}
+@keyframes rise{from{opacity:0;transform:translateY(24px) rotate(-1deg)}to{opacity:1;transform:none}}
+canvas{position:fixed;inset:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.flame,.letter.show{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="cake" aria-label="Birthday cake">
+    <div class="candles" id="candles"></div>
+    <div class="tier1"></div><div class="tier2"></div>
+  </div>
+  <p class="hint" id="hint">Tap each candle to blow it out.</p>
+  <section class="letter" id="letter" aria-live="polite">
+    <h2 id="lt"></h2>
+    <p class="msg" id="lm"></p>
+    <p class="sign" id="ls"></p>
+  </section>
+</main>
+<canvas id="c"></canvas>
+<script>
+
+const CFG = {
+  name: "Celine",
+  age: 23,                
+  subtitle: "Make a wish, then blow out the candles.",
+  letterTitle: "Dear Celine,",              
+  signature: "Lin Neng Yu",                 
+  message: `国庆节快乐！！！ 
+
+Eh salahhhhh..... Hehehehehe
+
+Happy 23rd birthday, Cel! Kita b2 udh sama" memasuki umur 23 tahun. Semoga km bisa sukses terus, sehat selalu, sayang sama keluarga, lebih sabar, lebih optimis, lebih sayang diri sendiri, dan lebih percaya diri. (lebih sayang aku, uupsss) AMIN🙏🙏🙏
+
+Setelah km memulai dunia bermasyarakat dan pekerjaan, pasti banyak hal yg membuat km kaget dan capek. Jujur, aku sangat amat 心疼你 (entah km nangkep sebagai "temen", mantan, atau masih hubungan tanpa stasus). Kesehatan dan kebahagiaan mu bener" kacau. Aku berharap km at least bisa mantain kesehatan. Klo kebahagiaan, berharap km nda mencari kebahagiaan melalui hal-hal duniawi (aku rasa km paham, klo nda paham tanya aja ya). Jgn mudah terpengaruh yahh cel.
+
+Jangan merasa capek atau 烦 yah ketika keluargamu/aku "mngkin" care berlebihan. Contoh kek masalah km mau dijemput karena kemaleman. 毕竟 pamamu psti jg khawatir klo km pulang malem gt. Klo misal nda bahaya, pamamu nda mngkin sekekeh itu buat nawarin/ngomongin km. Jangan merasa dirimu beban. Ndapapa kok klo km blng mau balik sendiri, cuman ngomong baik" yah? Jgn berantem karena hal sepele ini. Nda beban, normal ortu overthink jg. Km anak cewek pula. Aku sebagai anak cowok aja mamaku ya overthink (km jg tau itu kan?). Jd normal ajaaaaa yaaa celine sayangku🤭
+
+Km bener" orang yg hebat, cel. Klo ngomong agak menggelikan, km cewek terhebat yg pernah aku temui. Serius nda bohong.
+
+Aku suayang dan loveee poll sama km❤️. Nda bs bohong, nda bs bullshit klo nda sayang sama km. Aku berharap km bs take care of yourself. Emmmm, klo km masih pgn balikan sama aku, tell me ya hehe 🫣🫣🫣. Siapa tahu kan yah hehehehe. Pgn kembali seperti dulu. Km menjaga aku, aku menjaga km. Aku sangat menikmati dimana kek kita b2 saling menopang, hidup b2 tanpa orng lain pun jg ndapapa. Nda perlu 无效社交, buang" energi. Yauda b2 aja kek bener" what a mature relationship (opiniku aja sih. Klo menurutmu nda, tell me juga hehe).
+
+Sorry dlu bakal bahas tentang hal" religius/agama. Tuhan bakal njagain km terus. Not only your papa, but also aku sangat amat impressed dan bangga waktu km blng, km capek tpi km larinya ke greja. "Bersyukur km tumbang, capek fisik mental, tpi larinya ke tmpt yg lbh baik". Sumpah very proud of you. Hope you not losing your 原则. Pelampiasanmu lari ke hal yg bener, thats definitely one of the best thing that youve ever done. Thats one of the reason why i said, km cewek terhebat yang pernah aku temui. 
+
+Sebentar lagi km bakal ada test probationmu. Youre gonna pass it no matter what, trust me. But........ Km psti nda pgn aku mbahas ini, cuman ttp hrs aku bahas. Km hrs banyak reconsider yah mau lanjut kerja disitu apa nda. Bknnya mau menghambat karirmu sebagai programmer (mungkin). Cmn ngeliat lingkungan kerja yang "toxic", nda membuat km berkembang jg. Nda bisa istirahat, nda punya waktu buat diri sendiri dan sekitar, kerjaan numpuk, banyak bombshell, ada orang mesum, dll. Entah banyak atau nda, tentu km psti belajar juga mengenai kerjaan software developer (meski skarang kerjaanmu jg udh nda ada hubungannya). Jadi, hanya mengingatkan km aja yahhh. Sorry klo km nda suka bacanya atau nda suka aku mbahas ini.
+
+Banyak" lah ngobrol sama ortumu juga. Yahhh tntang apapun lah. Mau itu tntang kerja, kondisimu. Skalian tntang hubungan kita, aku rasa pamamu jg perlu tau kondisi percintaanmu.  Pamamu jg pgn denger cerita dri kamu kok. Tapi mereka ngeliat kondisimu yang masih sulit diajak ngobrol, mereka psti mundur dulu. Tentunya km empet sendiri di hati juga nda bakal membaik misalnya. I dunno if you ever tell kek orng lain (terutama skarang kek cece" kantor misal) cerita kamu mungkin, dsb. Dulu aku jg blng, sharing ke mereka cmn nambah" in gossip tntang dirimu aja. Okie 扯远了, balik lg ke pama. Cuman klo pama udh mulai kata" iman, Tuhan, dsb, jgn 激动 dlu yah. Ingetin aja baik" mereka kek, "pama, aku pgn pure denger pendapat, kurang pgn denger pama bicara dari sisi agama.". Meski berulang nda sengaja 漏嘴 tntang agama lg, ingetin terus aja dengan sabar yah? Tujuannya mereka baik, nda ada kek aku gt pgn 控制你 sgala macem. Klo pgn 控制你 udah pasti km nda dikasi kebebasan sebanyak itu, malah kek mamaku nnti😂. 这不行，那也不行。得听我妈的. Promise me to be more patient about this jg yah. 
+
+I'm always here for you. Your matcha is still your matcha, your bubu is still your bubu, neng yu is still neng yu. Honestly, i love you no matter what. Jika kamu ingin kembali lagi ke sisi ku, please jgn malu, gengsi, ataupun bimbang. Sumpah, ndaada yg bs gntiin km. Aku selalu berdoa demi 你的健康和幸福. I just want you to be happy with or without me........ Its hard for me to say this. I cant be 理性 for sure, even tho i did it last week, supaya km lebih bs ngelepasin aku aja (jujur). Believe it or not, terlalu pgn sama km. Funfact, bkn karena minuman yang km kirim ke aku, sumpah ndaada hubungannya. Aku pgn sih kasi km minuman gt jg, but yeahh...... i don't think you allow me to do that. So aku ataupun "kita" hanya menipu diri sendiri aja. Karena aku sendiri ws psti nda isa lepas 😂😂. Hrs rehat berapa lama aja ndatau. 承诺 is still 承诺, aku janji bakal kasi kamu 完整的家 dan 补你以前没有得到的爱. That is not bullshit, that is true. 你说承诺很简单，那是错的。如果简单，也没见得你跟我承诺过hehehehehe。和一个人承诺一生的事情是非常难的事情。Funfact yg aku cerita minggu lalu telp sama mamaku itu, mamaku ada blng ini heheheh “你确实当时没有Celine肯定也毕不了业，你们两个很优秀，两个优秀的基因在一起本来会非常好”, trus aku kek “所以说可惜吗”.hehehehehehe. mini you would be cuteeee and genius anjay🤭.（近期）找个时间约我见面哦~  hehehehe（也不一定近期啦）。
+
+“直到视线变得模糊，直到不能呼吸，让我们形影不离~~
+如果全世界我也可以放弃，至少还有你值得我去珍惜~~
+而你在这里就是生命的奇迹~~
+也许全世界我也可以忘记就是不愿意失去你的消息~~
+你掌心的痣我总记得在那里~~ 
+
+还是经常看你唱这首歌的视频，而不是听原唱hehehe.
+https://drive.google.com/file/d/11L861EnNtQDpbrSqTTC8SCHwxxoDdVxF/view?usp=drivesdk
+uapik suaramu~~ 
+
+Again, happy birthday to my favorite person of all time, Celine Kristy Gunawan a.k.a 薛佳恩🥳🎉🎊🎂, or i can you Mochii Bubuuuuuuu hehehehehehehehheheheh gndeng. Miss your genuine smile, laugh, smirk, etc. Aku pesenin cakemu nnti sore jam 6an yaa, semoga nda out of stock tbtb hehehe. Love you as everything cel🤟. God will always bless you and your family, AMIN🙏
+
+Ohiya klo km buka pake laptop, PP dri website htmlnya coba liat. Lucu dan gemesnyaa~~~ hehehehe`
+
+
+};
+
+
+const $ = id => document.getElementById(id);
+$("title").textContent = "Happy Birthday, " + CFG.name + "!";
+$("sub").textContent = CFG.subtitle;
+$("lt").textContent = CFG.letterTitle;
+$("lt").hidden = !CFG.letterTitle;
+$("lm").textContent = CFG.message.trim();
+$("ls").textContent = CFG.signature;
+
+$("ls").hidden = !CFG.signature;
+
+const n = Math.min(Math.max(CFG.age, 1), 7);
+let left = n;
+for (let i = 0; i < n; i++) {
+  const b = document.createElement("button");
+  b.className = "candle"; b.setAttribute("aria-label", "Blow out candle " + (i + 1));
+  b.innerHTML = '<span class="flame"></span>';
+  b.addEventListener("click", () => {
+    if (b.classList.contains("out")) return;
+    b.classList.add("out");
+    if (--left === 0) celebrate();
+  });
+  $("candles").appendChild(b);
+}
+
+const cv = $("c"), ctx = cv.getContext("2d");
+let parts = [];
+function size(){ cv.width = innerWidth; cv.height = innerHeight; }
+addEventListener("resize", size); size();
+function celebrate(){
+  $("hint").textContent = "Your wish is on its way.";
+  $("letter").classList.add("show");
+  $("letter").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth", block: "start"});
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  const cols = ["#ff7a9c","#ffb84d","#fff4f0","#b48cff","#7fe3d0"];
+  for (let i = 0; i < 140; i++) parts.push({x: innerWidth/2, y: innerHeight/3, vx: (Math.random()-.5)*12, vy: -Math.random()*12-3, s: Math.random()*7+4, r: Math.random()*6, c: cols[i % cols.length], life: 260});
+  requestAnimationFrame(tick);
+}
+function tick(){
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => p.life-- > 0);
+  parts.forEach(p => { p.vy += .25; p.x += p.vx; p.y += p.vy; p.r += .15; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.globalAlpha = Math.min(1, p.life/60); ctx.fillStyle = p.c; ctx.fillRect(-p.s/2, -p.s/4, p.s, p.s/2); ctx.restore(); });
+  if (parts.length) requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
